@@ -123,6 +123,7 @@ void Ode_Int::go_gsl(double x1, double x2, int nsteps, double eps, int log_flag)
 	double xstep;
 	if (log_flag) xstep = pow(10.0,log10(x2)/(1.0*nsteps));
 	else xstep = (x2-x1)/(1.0*nsteps);
+	// printf("xstep: %f\n", xstep);
 
 	this->derivs_y=vector(this->nvar);
 	this->derivs_dydt=vector(this->nvar);
@@ -137,7 +138,7 @@ void Ode_Int::go_gsl(double x1, double x2, int nsteps, double eps, int log_flag)
 //	this->control=gsl_odeiv2_control_y_new(0.0,eps);
 //	this->evolve=gsl_odeiv2_evolve_alloc(this->nvar);
 	this->driver=gsl_odeiv2_driver_alloc_y_new (&sys, gsl_odeiv2_step_msbdf,xstep,0.0,eps);
-	
+
 	double x = x1;
 	double h = xstep;
 	
@@ -154,7 +155,9 @@ void Ode_Int::go_gsl(double x1, double x2, int nsteps, double eps, int log_flag)
 	
 		double xnext;
 		if (log_flag) xnext = pow(10.0,log10(x2)*j/(1.0*nsteps));
-		else xnext = (x2-x1)*j/(1.0*nsteps);
+		// else xnext = (x2-x1)*j/(1.0*nsteps);
+		else xnext = this->xp[this->kount]+xstep;
+
 		status=gsl_odeiv2_driver_apply (this->driver,&x,xnext,this->ynext);
 
 		if (this->verbose) printf("%lg %lg %lg %d\n",x1,x2,xnext,status);
