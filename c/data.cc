@@ -66,7 +66,7 @@ void Data::calculate_chisq(Crust &crust)
 // uses the result of the cooling to calculate chi-squared
 {
 	int nmodel = crust.ODE.kount;
-	
+	// printf("%d\n", nmodel);
 	double g=crust.g;
 	double ZZ=crust.ZZ;
 	double R=crust.radius;

@@ -35,6 +35,7 @@ Crust::Crust() {
 	// Envelope model
 	this->gpe=0;	
 	this->use_my_envelope=0;
+	this->yHe= -1;
 	
 	// Other parameters that are used during time evolution
 	this->Qimp=1.0;
@@ -250,9 +251,10 @@ void Crust::get_TbTeff_relation(void)
 // reads in the Flux-T relation from the data file output by makegrid.cc
 {
 	double *temp, *flux;  // temporary storage to initialize the spline
-	int npoints = 195;  //  needs to be >= number of points read in
+	int npoints = 91;  //  needs to be >= number of points read in
 	temp = new double [npoints+1];
 	flux = new double [npoints+1];
+	int count;
 	
 	// the file "envelope_data/grid" is made by makegrid.cc
 	// it contains  (column depth, T, flux)  in cgs
@@ -267,31 +269,49 @@ void Crust::get_TbTeff_relation(void)
 			exit(1);
 		}
 	} else {
-		if (this->gpe) fp = fopen("envelope_data/grid_He4","r");
-		else fp = fopen("envelope_data/grid_He9","r");
+		if (this->yHe != -1) fp = fopen("envelope_data/grid", "r");
+		else{
+			if (this->gpe) fp = fopen("envelope_data/grid_He4","r");
+			else fp = fopen("envelope_data/grid_He9","r");
+		}
 	}
 	FILE *fp2=NULL;
 	if (this->output) fp2=fopen("out/TbTeff", "w");
 	
-	double y,T,F,rho,dummy;
-	int count = 0;
-	while (!feof(fp)) {
-		fscanf(fp, "%lg %lg %lg %lg %lg %lg\n", &y, &T, &F,&rho,&dummy,&dummy);
-		if (fabs(y-log10(this->yt))<1e-3) {  // select out the points which correspond to the top column
-			count++;
-			temp[count] = pow(10.0,T);
-			// correct for gravity here:
-			flux[count] = pow(10.0,F); //* (this->g/2.28e14);
-			if (this->output) fprintf(fp2, "%d %lg %lg %lg %lg %lg\n", count,y,T,F,temp[count],flux[count]);
+	if (this->yHe != -1) {
+		double y,T,F,yHe;
+		count = 0;
+		while (!feof(fp)) {
+			fscanf(fp, "%lg %lg %lg %lg\n", &y, &T, &F,&yHe);
+			if (abs(this->yHe - yHe) < 1e-2){
+				count++;
+				temp[count] = pow(10.0,T);
+				// correct for gravity here:
+				flux[count] = pow(10.0,F); //* (this->g/2.28e14);
+				if (this->output) fprintf(fp2, "%d %lg %lg %lg %lg %lg %lg\n", count,y,T,F,temp[count],flux[count], this->yHe);
+			}
 		}
+	} else {
+		double y,T,F,rho,dummy;
+		count = 0;
+		while (!feof(fp)) {
+			fscanf(fp, "%lg %lg %lg %lg %lg %lg\n", &y, &T, &F,&rho,&dummy,&dummy);
+			if (fabs(y-log10(this->yt))<1e-3) {  // select out the points which correspond to the top column
+				count++;
+				temp[count] = pow(10.0,T);
+				// correct for gravity here:
+				flux[count] = pow(10.0,F); //* (this->g/2.28e14);
+				if (this->output) fprintf(fp2, "%d %lg %lg %lg %lg %lg\n", count,y,T,F,temp[count],flux[count]);
+			}
+		}
+		if (this->output) fclose(fp2);
 	}
-		
 	fclose(fp);
 	if (this->output) fclose(fp2);
 	
 	// the following spline contains the flux as a function of temperature at column depth this->yt
 	this->TEFF.minit(temp,flux,count);
-	
+
 	delete [] temp;
 	delete [] flux;
 }

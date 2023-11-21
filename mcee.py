@@ -20,8 +20,8 @@ from multiprocessing import Pool
 os.environ["OMP_NUM_THREADS"] = "1"
 def main():
 
-	nwalkers, ndim = 10, 3
-	nsteps = 10
+	nwalkers, ndim = 20, 4
+	nsteps = 5000
 	# 200, 1000
 	dir = '1659'
 	if os.path.exists('mcmc/'+dir):
@@ -36,7 +36,7 @@ def main():
 	#p0 = emcee.utils.sample_ball([3.0,13.0,1.4,10.0],[0.5,0.5,0.1,1.0],nwalkers)
 	#p0 = emcee.utils.sample_ball([9.0,1.0,4.0,0.1,1.2,13.0],[0.3,0.1,0.3,0.01,0.01,0.5],nwalkers)
 	#p0 = emcee.utils.sample_ball([7.7,0.5,4.0,0.1],[0.3,0.3,0.3,0.01],nwalkers)
-	p0 = emcee.utils.sample_ball([7.7,0.5,4.0],[0.3,0.3,0.3],nwalkers)
+	p0 = emcee.utils.sample_ball([7.7,0.5,4.0,5.0],[0.3,0.3,0.3,0.3],nwalkers)
 	
 	# Q,Lscale,Touter,Tc,M,R,rhotransition,Tinner
 	#p0 = emcee.utils.sample_ball([1.0,0.2,9.0,2.0,1.8,2.0,10.0,1.0],
@@ -94,6 +94,7 @@ def main():
 def set_params(x,name):
 	data="""resume 0
 
+yHe    	8
 mass	1.62
 radius	11.2
 timetorun	10000.0
@@ -130,6 +131,7 @@ Tt	4.2e8
 #		'Lscale':x[1],
 #		'Edep':x[2],
 		'Tt':x[2]*1e8,
+		'yHe':round(x[3], 1),
 #		'mdot':x[3],
 #		'mass':x[4],
 #		'radius':radius,
@@ -161,7 +163,7 @@ def get_chisq(x):
 	data = subprocess.check_output( ["./crustcool",name,'1'])
 	# print(data)
 	chisq = float(re.search(b'chisq = ([-+]?[0-9]*\.?[0-9]+)',data).group(1))
-#	print x[0],x[1],x[2],x[3],x[4],x[5],x[6],chisq
+	# print(x[0],x[1],x[2],x[3],x[4],x[5],x[6],chisq)
 	os.system('rm /tmp/init.dat.'+name)
 	return chisq
 
@@ -179,8 +181,8 @@ def lnprob(x):
 #	xmax=numpy.array([2.0,0.5,20.0,3.0,2.4,g2,12.0,3.0])
 #	xmin=numpy.array([1.0,-3.0,0.1,0.0,1.1,8.0])
 #	xmax=numpy.array([100.0,3.0,100.0,3.0,2.5,16.0])
-	xmin=numpy.array([0.0,-3.0,0.0])
-	xmax=numpy.array([100.0,3.0,100.0])
+	xmin=numpy.array([0.0,-3.0,0.0, 4.0])
+	xmax=numpy.array([100.0,3.0,100.0, 9.0])
 	#xmin=numpy.array([0.0,-3.0,0.0,0.0])
 	#xmax=numpy.array([100.0,3.0,100.0,1.0])
 	if (len((x<xmin).nonzero()[0])>0 or len((x>xmax).nonzero()[0])>0):

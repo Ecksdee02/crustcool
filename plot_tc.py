@@ -8,16 +8,17 @@ fig = plt.figure(figsize=(8,6))
 ax = fig.add_subplot(1,1,1)
 
 def read_lightcurve(name):
-	f = open("out/prof"+name)
+	f = open("out/prof_"+ str(name))
 	t=numpy.array([])
 	Teff=numpy.array([])
 	for line in f:
-		# convert to time in days
-		t=numpy.append(t,float(line.split()[0])/(24.0*3600.0))
-		# convert temperature to eV
-		Teff=numpy.append(Teff,float(line.split()[4])*1.38e-16/1.6e-12)
-		# Note that the output from the code is already redshifted,
-		# we don't need to do it here
+		if float(line.split()[0]) < 1e10:
+			# convert to time in days
+			t=numpy.append(t,float(line.split()[0])/(24.0*3600.0))
+			# convert temperature to eV
+			Teff=numpy.append(Teff,float(line.split()[4])*1.38e-16/1.6e-12)
+			# Note that the output from the code is already redshifted,
+			# we don't need to do it here
 	f.close()
 	return t,Teff
 
@@ -27,8 +28,13 @@ if len(sys.argv)>1:
 else:
 	source_name = '1659'
 
-t,Teff = read_lightcurve("")
-plt.plot(t,Teff,'r')
+plots = [4, 5, 6, 7, 8, 9]
+for plot in plots:
+	t,Teff = read_lightcurve(plot)
+	plt.plot(t,Teff, label=plot)
+# t, Teff = read_lightcurve("")
+# plt.plot(t,Teff,'r')
+
 
 # Read in the data and plot it
 f = open("data/"+source_name)
@@ -52,5 +58,6 @@ plt.xlim((30,1e4))
 plt.ylim((40,125))
 #plt.ylim((58,110))
 ax.set_xscale('log')
+plt.legend()
 plt.savefig("tc.pdf")
 #plt.show()

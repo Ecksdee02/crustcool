@@ -2,6 +2,7 @@
 
 resume 0
 
+yHe     8
 mass	1.62
 radius	11.2
 timetorun	10000.0
@@ -14,13 +15,13 @@ SFgap	1
 kncrit	0
 accreted 1
 
-Qimp	3.2
-Tc	3.1e7
+Qimp	0.6
+Tc	6e7
 
 # fixed top temperature during accretion:
 cooling_bc	0
 extra_heating	0
-Tt	4.2e8
+Tt	5.4e8
 
 # or cooling boundary condition with shallow heating:
 #cooling_bc	1

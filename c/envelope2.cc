@@ -62,7 +62,7 @@ void Envelope::make_grid(double B)
 				}
             }
         }
-		printf("hi\n");
+		printf("%lg\n", yi);
     }
 
 	printf("\n");

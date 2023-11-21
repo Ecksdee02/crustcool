@@ -112,6 +112,7 @@ void parse_parameters(char *fname,char *sourcename,Crust &crust,double &time_to_
 			if (!strncmp(s,"Lnu_core_alpha",14)) crust.Lnu_core_alpha=x;
 			if (!strncmp(s,"Lnu_core_norm",13)) crust.Lnu_core_norm=x;
 			if (!strncmp(s,"gpe",3)) crust.gpe=(int) x;
+			if (!strncmp(s,"yHe",3)) crust.yHe= x;
 			if (!strncmp(s,"radius",6)) crust.radius=x;
 			if (!strncmp(s,"Edep",4)) crust.energy_deposited_outer=x;
 			if (!strncmp(s,"ytop",4)) crust.yt=x;

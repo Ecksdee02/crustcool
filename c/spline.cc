@@ -108,7 +108,7 @@ void Spline::minit(double *x, double *y, int n)
   }
 
   gsl_sort2(this->xtab,1,this->ytab,1,(size_t) n);
-	
+
   acc = gsl_interp_accel_alloc();
   spline = gsl_spline_alloc (gsl_interp_linear, n);
   gsl_spline_init(spline,this->xtab,this->ytab,n);

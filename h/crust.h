@@ -16,7 +16,7 @@ public:
 	void set_temperature_profile(double *rhovec,double *Tvec,int nvec);
 	
 	int N;
-	double Pb, Pt, yt, dx;
+	double Pb, Pt, yt, dx, yHe;
 
 	GridPoint *grid;
 
